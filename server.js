@@ -1,11 +1,12 @@
 "use strict";
-var express = require("express");
-var app = express();
-
+const express = require("express");
+const app = express();
+const cors = require("cors");
+app.use(cors());
 const SerialPort = require("serialport");
 const Readline = require("@serialport/parser-readline");
 const parser = new Readline();
-const port = new SerialPort("COM4", { baudRate: 9600 });
+const port = new SerialPort("/dev/cu.URT0");
 port.pipe(parser);
 
 const PORT = 3001;
