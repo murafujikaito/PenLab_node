@@ -1,16 +1,15 @@
 "use strict";
+
+// Set up express server
 const express = require("express");
 const app = express();
-const cors = require("cors");
-app.use(cors());
-const SerialPort = require("serialport");
-const Readline = require("@serialport/parser-readline");
-const parser = new Readline();
-const port = new SerialPort("/dev/cu.URT0");
-port.pipe(parser);
-
 const PORT = 3001;
 
+// Corresponding CORS(Cross-Origin Resource Sharing)
+const cors = require("cors");
+app.use(cors());
+
+// Start server
 app.listen(PORT, () => {
   console.log(
     "Expressサーバーがポート%dで起動しました。モード:%s",
@@ -19,20 +18,29 @@ app.listen(PORT, () => {
   );
 });
 
+// Set up Serial Communication
+const SerialPort = require("serialport");
+const Readline = require("@serialport/parser-readline");
+const parser = new Readline();
+const port = new SerialPort("/dev/cu.URT0");
+port.pipe(parser);
+
+// Load Sensor value
 parser.on("data", line => {
   convert(line);
-  console.log(`> ${line}`);
 });
 
-let DataJson = 0;
+let DataJson = { data: 0 };
 
-let convert = line => {
+// Convert Sensor value to JSON
+const convert = line => {
   console.log(`> ${line}`);
   DataJson = {
     data: line
   };
 };
 
+// Push JSON
 app.get("/", (req, res) => {
   res.json(DataJson);
 });
